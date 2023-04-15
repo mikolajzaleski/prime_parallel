@@ -56,7 +56,7 @@ int main(int argc,char* argv[]){
     #endif
 
     #ifdef savelist
-    FILE *f = fopen("parallel_div.txt","w+");
+    FILE *f = fopen("seq_div.txt","w+");
     for (int i = 0; i < num_primes; i++){
         fprintf(f,"%d\n",primes[i]);
     }
