@@ -1,51 +1,71 @@
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
-#include<stdbool.h>
-#include<math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <omp.h>
+#include <math.h>
+#include <time.h>
+
+#define verboselist
+// #define savelist
+
 int main(int argc,char* argv[]){
-    int min =2;
-    int max=10000001;
-    int size=max-min;
-    bool prime=false;
-    int  *primes;
-    primes=malloc(sizeof(int)*size);
-    int num_primes=1;
-    
-    int cur=1;
-    primes[0]=2;
-    for(int i=min;i<=max;i++){
-        int loc_max=sqrt(i)+1;
-        prime=false;
-        for(int j=2;j<=loc_max;j++){
-            
-            if(i%j==0){
-                prime=false;
-                break; 
-            }else{
-                prime=true;
-         }   
+    clock_t cstart, cend;
+    double start, end;
+    int min = 2;
+    int max = 10000000;
+    int size = max + 1 - min;
+
+    int *primes;
+    primes = malloc(sizeof(int) * size);
+    int num_primes = 0;
+
+    if(min <= 2)
+        primes[num_primes++] = 2;
+
+    bool prime;
+
+    cstart = clock();
+    start = omp_get_wtime();
+
+    for(int i = min; i <= max; i++){
+        int loc_max = (int) ceil(sqrt(i));
+        prime = true;
+
+        for(int j = 2; j <= loc_max; j++){
+            if(i % j == 0){
+                prime = false;
+                break;
+            }
         }
-        if(prime){
-        primes[num_primes]=i;
-       
-        num_primes++;
-    }
-   
+
+        #pragma omp critical (num_primes) 
+        if(prime)
+            primes[num_primes++] = i;
     } 
-    for (int i=0;i<num_primes;i++){
-        printf("%d ",primes[i]);
-    }
     
-      
-      FILE * f=fopen("seq_div.txt","w");
-      fclose(f);
-      for (int i=0;i<num_primes;i++){
-      f=fopen("seq_div.txt","a");
-      fprintf(f,"%d\n",primes[i]);
-      fclose(f);
-      }
-      free(primes);
+    cend = clock();
+    end = omp_get_wtime();
 
+    #ifdef verboselist
+    for (int i; i < num_primes; i++){
+        printf("%-8d", primes[i]);
+        if((i + 1) % 10 == 0)
+            printf("\n");
+    }
+    printf("\n");
+    #endif
 
+    #ifdef savelist
+    FILE *f = fopen("parallel_div.txt","w+");
+    for (int i = 0; i < num_primes; i++){
+        fprintf(f,"%d\n",primes[i]);
+    }
+    fclose(f);
+    #endif
+
+    free(primes);
+
+    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+
+    return EXIT_SUCCESS;
 }
