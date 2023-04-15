@@ -13,7 +13,7 @@ void print_results(char* name,bool * primes_bool,int min,int max){
     FILE* f=fopen(name,"a");    
        
         
-        if(primes_bool[i]){
+        if(!primes_bool[i]){
             fprintf(f,"%d\n",i);
         }
         fclose(f);
@@ -21,28 +21,32 @@ void print_results(char* name,bool * primes_bool,int min,int max){
 int main(int argc, char *argv[])
 {
     int min = 2;
-    int max = 100000001;
+    int max = 10000002;
     int size = max - min;
     FILE f;
     bool prime = false;
     int *primes;
     primes = malloc(sizeof(int) * size);
     int num_primes = 0;
-    bool primes_bool[max + 1];
-    memset(primes_bool, true, sizeof(primes_bool));
+    bool * primes_bool;
+    primes_bool=malloc(sizeof(bool)*(max + 1));
+    //memset(primes_bool, true, sizeof(primes_bool))false;
 
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
     for (int i = 2; i <= sqrt_sieve; i++)
     {
-        if (primes_bool[i] == true)
+        if (primes_bool[i] == false)
         {
             for (tmp = i+i; tmp <= max; tmp += i)
             {
-                primes_bool[tmp]=false;
+                primes_bool[tmp]=true;
+                num_primes++;
             }
         }
     }
 
     print_results("name",primes_bool,min,max);
+    printf("%d",size);
+
 }
