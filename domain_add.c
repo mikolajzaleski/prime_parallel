@@ -23,15 +23,31 @@ int main(int argc, char *argv[])
     bool * primes_bool;
     primes_bool=malloc(sizeof(bool)*(max + 1));
     //memset(primes_bool, true, sizeof(primes_bool))false;
-
+   bool *subset1;
+    bool *subset2;
+    bool *subset3;
+    bool *subset4;
+    bool *subset5;
+    bool *subset6;
+    bool *subset7;
+    bool *subset8;
+    subset1=malloc(sizeof(bool)*(max/8+1));
+    subset2=malloc(sizeof(bool)*(max/8+1));
+    subset3=malloc(sizeof(bool)*(max/8+1));
+    subset4=malloc(sizeof(bool)*(max/8+1));
+    subset5=malloc(sizeof(bool)*(max/8+1));
+    subset6=malloc(sizeof(bool)*(max/8+1));
+    subset7=malloc(sizeof(bool)*(max/8+1));
+    subset8=malloc(sizeof(bool)*(max/8+1));
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
     int i;
     cstart = clock();
     start = omp_get_wtime();
+    
+
     #pragma omp parallel shared(i) 
     {
-    #pragma omp parallel for schedule(guided,1)
     for ( i = 2; i <= sqrt_sieve; i++)
     {
         if (primes_bool[i] == false)
@@ -58,4 +74,13 @@ int main(int argc, char *argv[])
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
     free(primes_bool);
+    free(subset1);
+    free(subset2);
+    free(subset3);
+    free(subset4);
+    free(subset5);
+    free(subset6);
+    free(subset7);
+    free(subset8);
+    
 }
