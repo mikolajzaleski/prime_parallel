@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     bool * primes_bool;
     primes_bool=malloc(sizeof(bool)*(max + 1));
     //memset(primes_bool, true, sizeof(primes_bool))false;
-   bool *subset1;
+    bool *subset1;
     bool *subset2;
     bool *subset3;
     bool *subset4;
@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     subset6=malloc(sizeof(bool)*(max/8+1));
     subset7=malloc(sizeof(bool)*(max/8+1));
     subset8=malloc(sizeof(bool)*(max/8+1));
+    bool *subsets[]={subset1,subset2,subset3,subset4,subset5,subset6,subset7,subset8};
+    subsets[0][1]=1;
+
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
     int i;
