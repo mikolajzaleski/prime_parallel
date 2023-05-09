@@ -9,38 +9,38 @@
 #include <time.h>
 #include <fcntl.h>
 #define START_NUMBER 10000
-#define PARTITION_SIZE sizeof(bool)*(max-min/8+1)
+#define PARTITION_SIZE sizeof(bool)*((max-min)/thread_count+1)
 
 unsigned int* create_start_primes(unsigned int min,unsigned  int max);
 int main(int argc, char *argv[])
 {
     clock_t cstart, cend;
     double start, end;
-    unsigned int min = 2;
-    unsigned int max = 300000000;
+    unsigned int min = 3;
+    unsigned int max = 300000;
     unsigned int size = max - min;
-    unsigned int* start_p=create_start_primes(3,10000);
+    unsigned int* start_p=create_start_primes(2,(int)sqrt(max)+1);
+
     for(unsigned int i=1;i<start_p[0];i++){
         printf("%d ",start_p[i]);
     }
+
     bool prime = false;
     int *primes;
     primes = malloc(sizeof(int) * size);
     int num_primes = 0;
     bool * primes_bool;
     primes_bool = malloc(sizeof(bool)*(max-min + 1));
-    
-    bool *subset1, *subset2, *subset3, *subset4, *subset5, *subset6, *subset7, *subset8;
-    subset1=malloc(PARTITION_SIZE);
-    subset2=malloc(PARTITION_SIZE);
-    subset3=malloc(PARTITION_SIZE);
-    subset4=malloc(PARTITION_SIZE);
-    subset5=malloc(PARTITION_SIZE);
-    subset6=malloc(PARTITION_SIZE);
-    subset7=malloc(PARTITION_SIZE);
-    subset8=malloc(PARTITION_SIZE);
-    bool *subsets[]={subset1,subset2,subset3,subset4,subset5,subset6,subset7,subset8};
-    
+
+    int thread_count;
+     
+    #pragma omp parallel
+    thread_count = omp_get_num_threads();
+
+    bool **subsets=malloc(sizeof(bool*)*thread_count);
+
+    for(int i = 0; i < thread_count; ++i)
+        subsets[i] = malloc(PARTITION_SIZE);
 
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
@@ -49,19 +49,33 @@ int main(int argc, char *argv[])
     start = omp_get_wtime();
     
 
-    #pragma omp parallel shared(i)
-    for ( i = 2; i <= sqrt_sieve; i++)
+    #pragma omp parallel 
     {
-        if (primes_bool[i] == false)
-        {
-            #pragma omp parallel for schedule(guided,1) 
-            for (tmp = i+i; tmp < max; tmp += (i))
-            {
-                primes_bool[tmp]=true;
+        int thread_num = omp_get_thread_num();
+        bool *p_subset = subsets[thread_num];
+        unsigned int lower_l = (int)((max-min)/(thread_count)) * thread_num;
+        unsigned int upper_l = (int)(((max-min)/(thread_count))) * (thread_num + 1) - 1;
+        for (int i=1;i<start_p[0];i++){//size of array is stored  here start_p[0]
+            int min_m=lower_l/start_p[i];
+            
+           
+           for(int j=min_m*start_p[i];j<upper_l;j+=start_p[i]){
+            int ix=j-lower_l;
+            if (j!=start_p[i])
+            {subsets[thread_num][ix]=true;}
+      //     printf("%d \n",j);
+           }
+        }
+
+ 
+    }
+    for (int i=0;i<thread_count;i++){
+        for (int j=2;j<(int)((max-min)/(thread_count));j++){
+            if(subsets[i][j]==false){
+                printf("%d \n",j+((max-min)/(thread_count))*i);
             }
         }
     }
-    
     cend = clock();
     end = omp_get_wtime();
     for (int i=2;i<max;i++)
@@ -71,23 +85,19 @@ int main(int argc, char *argv[])
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
     free(primes_bool);
-    free(subset1);
-    free(subset2);
-    free(subset3);
-    free(subset4);
-    free(subset5);
-    free(subset6);
-    free(subset7);
-    free(subset8);
+    for(int i = 0; i < thread_count; ++i)
+        free(subsets[i]);
 
     return(EXIT_SUCCESS);
 }
+
+
 unsigned int* create_start_primes(unsigned int min,unsigned int max){
     unsigned int* start_primes;
-    int num_primes=10;
+    int num_primes=10000;
     
     int idx=0;
-    start_primes=malloc(sizeof(int)*num_primes);
+    start_primes=malloc(sizeof(unsigned int)*num_primes);
     
     int max_root=(int)sqrt(max);
     bool* is_prime=malloc(sizeof(bool)*START_NUMBER);
