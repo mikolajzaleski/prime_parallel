@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <omp.h>
@@ -17,7 +16,7 @@ int main(int argc, char *argv[])
     clock_t cstart, cend;
     double start, end;
     unsigned int min = 3;
-    unsigned long int max = 90000000;
+    unsigned long int max = 900000000;
     unsigned int size = max - min;
     unsigned int* start_p=create_start_primes(2,(int)(max)+1);
 
@@ -67,13 +66,16 @@ int main(int argc, char *argv[])
     
     cend = clock();
     end = omp_get_wtime();
-    for (unsigned long int  i=2;i<max;i++)
-        if(!primes_b[i]){ num_primes+=1;
-        printf("%ld ",i);
-        }
-        if(num_primes%50==0){
-            printf("\n");
-        }
+    // #pragma omp for
+    // for (unsigned long int  i=2;i<max;i++)
+    //     if(!primes_b[i]){
+    //         #pragma om
+    //          num_primes+=1;
+    //     // printf("%ld ",i);
+    //     }
+        // if(num_primes%50==0){
+        //     printf("\n");
+        // }
     printf("\n%d\n",num_primes);
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
@@ -92,7 +94,7 @@ unsigned int* create_start_primes(unsigned int min,unsigned int max){
     
     unsigned long int max_root=(unsigned long int)sqrt(max);
     start_primes=malloc(sizeof(unsigned long int)*max_root);
-  volatile  bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
+    bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
     for (int i=2;i<=max_root;i++){
         is_prime[i-2]=1;
     
