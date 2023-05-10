@@ -98,37 +98,6 @@ int main(int argc, char *argv[])
     return(EXIT_SUCCESS);
 }
  
-// int* create_start_primes(int sqrt_of_max){
- 
-//     primes = malloc(sizeof(int) * sqrt_of_max);
- 
-//     bool* is_prime=malloc(sizeof(bool)*max_root);
- 
-//     for (int i=2;i<=max;i++){
-//         is_prime[i-2]=1;
- 
-//     }
-//     for (int d=2;d<=max_root;d++){
-//         if(is_prime[d-2]==0)
-//             continue;
-//         for(int m=d+d;m<=max;m+=d){
-//             is_prime[m-2]=0;
-//         }
- 
-//     }
-//     for (int i=min-2;i<max;i++){
-//         if(is_prime[i]==1)
-//             {   idx++;
-//                 num_primes++;
-//             //    start_primes=(unsigned int*)realloc(start_primes,sizeof(unsigned int)*num_primes);
-//                 start_primes[idx]=i+2;
- 
-//             }       
-//     }
-//     start_primes[0]=idx+1;//size of array is stored  here
-//     free(is_prime);
-//     return start_primes;
-// }
 unsigned int* create_start_primes(unsigned int max){
     unsigned int* start_primes;
     unsigned int min=2;
