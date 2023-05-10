@@ -10,15 +10,15 @@
 #define START_NUMBER 10000
 #define PARTITION_SIZE sizeof(bool)*((max-min)/thread_count+1)
 
-unsigned int* create_start_primes(unsigned int min,unsigned  int max);
+unsigned int* create_start_primes(unsigned  int max);
 int main(int argc, char *argv[])
-{
+{omp_set_num_threads(8);
     clock_t cstart, cend;
     double start, end;
-    unsigned int min = 3;
-    unsigned long int max = 900000000;
+    unsigned int min = 2;
+    unsigned long int max = 1000000000;
     unsigned int size = max - min;
-    unsigned int* start_p=create_start_primes(2,(int)(max)+1);
+    unsigned int* start_p=create_start_primes((int)(max)+1);
 
     // for(unsigned int i=1;i<start_p[0];i++){
     //     printf("%d ",start_p[i]);
@@ -85,8 +85,9 @@ int main(int argc, char *argv[])
 }
 
 
-unsigned int* create_start_primes(unsigned int min,unsigned int max){
+unsigned int* create_start_primes(unsigned int max){
     unsigned int* start_primes;
+    unsigned int min=2;
     unsigned long int num_primes=max;
     
     int idx=0;
