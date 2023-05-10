@@ -10,7 +10,7 @@
  
 #define PARTITION_SIZE (sizeof(bool) * (int)ceil((max-min)/thread_count))
 #define loud
- 
+//#define numbers
 unsigned int* create_start_primes(unsigned int max);
  
 int main(int argc, char *argv[])
@@ -79,23 +79,16 @@ int main(int argc, char *argv[])
     cend = clock();
     end = omp_get_wtime();
  
-    // for (int i=0;i<thread_count;i++){
-    //     for (int j=0;j<(int)((max-min)/(thread_count));j++){
-    //         if(subsets[i][j]==false){
-    //             printf("%d \n",j+((max-min)/(thread_count))*i);
-    //         }
-    //     }
-    // }
-    // for(int i = 0; i <= size; ++i){
-    //     int subset_idx = i / PARTITION_SIZE;
-    //     int element_idx = i % PARTITION_SIZE;
-    //     if(subsets[(subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx][(subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false){
-    //         num_primes++;
-    //         #ifdef loud
- 
-    //         #endif
-    //     }
-    // }
+    for(int i = 0; i <= size; ++i){
+        int subset_idx = i / PARTITION_SIZE;
+        int element_idx = i % PARTITION_SIZE;
+        if(subsets[(subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx][(subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false){
+            num_primes++;
+            #ifdef numbers
+                printf("%d\n",((subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx)*PARTITION_SIZE +  min + ((subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx));
+            #endif
+        }
+    }
  
     printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
  
