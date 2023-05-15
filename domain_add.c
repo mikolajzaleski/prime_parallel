@@ -8,23 +8,23 @@
 #include <time.h>
 #include <fcntl.h>
  
-#define PARTITION_SIZE (sizeof(bool) * (int)ceil((max-min)/thread_count))
+#define PARTITION_SIZE (sizeof(bool) * (long int)ceil((max-min)/thread_count))
 #define loud
 //#define numbers
-unsigned int* create_start_primes(unsigned int max);
+unsigned long int* create_start_primes(unsigned long int max);
  
 int main(int argc, char *argv[])
-{   omp_set_num_threads(8); 
+{//   omp_set_num_threads(8); 
     //init
     clock_t cstart, cend;
     double start, end;
  
     int num_primes = 0;
  
-    int min = 2;
-    int max = 1000000000;
-    int size = max - min;
-    unsigned int* start_primes = create_start_primes((max));
+long int min = 400000000;
+   unsigned long  int max = 4000000000;
+    unsigned long int size = max - min;
+    unsigned  long int* start_primes = create_start_primes((max));
  
     //num of threads
     int thread_count;
@@ -44,21 +44,22 @@ int main(int argc, char *argv[])
     start = omp_get_wtime();
  
     // after init
-    #pragma omp parallel 
+   
+#pragma omp parallel 
     {
         int thread_num = omp_get_thread_num();
         bool *subset = subsets[thread_num];
-        int lower_bound = min + PARTITION_SIZE * thread_num;
-        int upper_bound = (thread_num + 1 == thread_count)? max : min + PARTITION_SIZE * (thread_num + 1) - 1;
+        unsigned long int lower_bound = min + PARTITION_SIZE * thread_num;
+        unsigned long int upper_bound = (thread_num + 1 == thread_count)? max : min + PARTITION_SIZE * (thread_num + 1) - 1;
  
         #ifdef loud
-        printf("T%-3d from %-12d to %d\n",thread_num,lower_bound,upper_bound);
+        printf("T%-3d from %-12ld to %ld\n",thread_num,lower_bound,upper_bound);
         #endif
  
-        int start_primes_count = start_primes[0];
-        for(int i = 1; i < start_primes_count; ++i){
-            int iterator = 0;
-            int mul_occurence;
+        unsigned long int start_primes_count = start_primes[0];
+        for(unsigned long int i = 1; i < start_primes_count; ++i){
+            unsigned long int iterator = 0;
+            unsigned long int mul_occurence;
             while(lower_bound + iterator <= upper_bound){
                 if((lower_bound + iterator) % start_primes[i] == 0){
                     mul_occurence = lower_bound + iterator;
@@ -78,14 +79,15 @@ int main(int argc, char *argv[])
  
     cend = clock();
     end = omp_get_wtime();
- 
-    for(int i = 0; i <= size; ++i){
-        int subset_idx = i / PARTITION_SIZE;
-        int element_idx = i % PARTITION_SIZE;
+#pragma omp parallel for 
+    for(unsigned long int i = 0; i <= size; ++i){
+        unsigned long int subset_idx = i / PARTITION_SIZE;
+        unsigned long int element_idx = i % PARTITION_SIZE;
         if(subsets[(subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx][(subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false){
-            num_primes++;
+        #pragma omp atomic 
+		num_primes++;
             #ifdef numbers
-                printf("%d\n",((subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx)*PARTITION_SIZE +  min + ((subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx));
+                printf("%ld\n",((subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx)*PARTITION_SIZE +  min + ((subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx));
             #endif
         }
     }
@@ -98,8 +100,8 @@ int main(int argc, char *argv[])
     return(EXIT_SUCCESS);
 }
  
-unsigned int* create_start_primes(unsigned int max){
-    unsigned int* start_primes;
+unsigned long int* create_start_primes(unsigned long int max){
+    unsigned long int* start_primes;
     unsigned int min=2;
     unsigned long int num_primes=max;
     
@@ -109,19 +111,19 @@ unsigned int* create_start_primes(unsigned int max){
     unsigned long int max_root=(unsigned long int)sqrt(max);
     start_primes=malloc(sizeof(unsigned long int)*max_root);
     bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
-    for (int i=2;i<=max_root;i++){
+    for (unsigned long int i=2;i<=max_root;i++){
         is_prime[i-2]=1;
     
     }
-    for (int d=2;d<=max_root;d++){
+    for (unsigned long int d=2;d<=max_root;d++){
         if(is_prime[d-2]==0)
             continue;
-        for(int m=d+d;m<=max_root;m+=d){
+        for(unsigned long int m=d+d;m<=max_root;m+=d){
             is_prime[m-2]=0;
         }
 
     }
-    for (int i=min-2;i<max_root;i++){
+    for (unsigned long int i=min-2;i<max_root;i++){
         if(is_prime[i]==1)
             {   idx++;
                 num_primes++;

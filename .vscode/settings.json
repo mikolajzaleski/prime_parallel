@@ -1,0 +1,12 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/mikolajz/prime_parallel",
+            "binaryPath": "/home/mikolajz/prime_parallel/function_add.out",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "time.h": "c"
+    }
+}
