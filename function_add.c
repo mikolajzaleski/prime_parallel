@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
     clock_t cstart, cend;
     double start, end;
     unsigned int min = 2;
-    unsigned long int max = 1000000000;
-    unsigned int size = max - min;
-    unsigned int* start_p=create_start_primes((int)(max)+1);
+    unsigned long int max = 10000000000;
+    unsigned long int size = max - min;
+    unsigned long int* start_p=create_start_primes((unsigned long int)(max)+1);
 
     // for(unsigned int i=1;i<start_p[0];i++){
     //     printf("%d ",start_p[i]);
@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
     {
         
         #pragma omp for schedule(dynamic)
-        for(int i=0;i<start_p[0];i++){
-            for (int j=start_p[i];j<max;j+=start_p[i]){
+        for(unsigned long int i=0;i<start_p[0];i++){
+            for (unsigned long int j=start_p[i];j<=max;j+=start_p[i]){
                 if(j>min&&j!=start_p[i]){
-                    primes_b[j]=true;
+                    primes_b[j-min]=true;
                 }
 
             }
@@ -66,6 +66,18 @@ int main(int argc, char *argv[])
     
     cend = clock();
     end = omp_get_wtime();
+    unsigned long int nump=0;
+    #pragma omp parallel for schedule(guided)
+    for(unsigned long int i=0;i<=max;i++){
+	
+    if(!primes_b[i])
+	{
+	//	primes[idx]=i;
+    #pragma omp atomic
+        	nump++;
+//        printf("%d ",i);
+	}
+    }
     // #pragma omp for
     // for (unsigned long int  i=2;i<max;i++)
     //     if(!primes_b[i]){
@@ -76,6 +88,8 @@ int main(int argc, char *argv[])
         // if(num_primes%50==0){
         //     printf("\n");
         // }
+	//
+	num_primes=nump+1;
     printf("\n%d\n",num_primes);
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 

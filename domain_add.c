@@ -11,20 +11,21 @@
 #define PARTITION_SIZE (sizeof(bool) * (int)ceil((max-min)/thread_count))
 #define loud
 //#define numbers
-unsigned int* create_start_primes(unsigned int max);
+    unsigned long int* create_start_primes(unsigned long int max);
  
-int main(int argc, char *argv[])
-{   omp_set_num_threads(8); 
+    int main(int argc, char *argv[])
+    {//   omp_set_num_threads(8); 
     //init
     clock_t cstart, cend;
     double start, end;
  
-    int num_primes = 0;
+    unsigned long int num_primes = 0;
  
-    int min = 2;
-    int max = 1000000000;
-    int size = max - min;
-    unsigned int* start_primes = create_start_primes((max));
+    long int min = 0;
+    unsigned long  int max = 10000000000;
+                            
+    unsigned long int size = max - min;
+    unsigned  long int* start_primes = create_start_primes((max));
  
     //num of threads
     int thread_count;
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
     start = omp_get_wtime();
  
     // after init
+   
     #pragma omp parallel 
     {
         int thread_num = omp_get_thread_num();
@@ -78,10 +80,10 @@ int main(int argc, char *argv[])
  
     cend = clock();
     end = omp_get_wtime();
- 
-    for(int i = 0; i <= size; ++i){
-        int subset_idx = i / PARTITION_SIZE;
-        int element_idx = i % PARTITION_SIZE;
+    #pragma omp parallel for 
+    for(unsigned long int i = 0; i <= size; ++i){
+        unsigned long int subset_idx = i / PARTITION_SIZE;
+        unsigned long int element_idx = i % PARTITION_SIZE;
         if(subsets[(subset_idx >= thread_count - 1)? thread_count - 1 : subset_idx][(subset_idx >= thread_count)? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false){
             num_primes++;
             #ifdef numbers
@@ -96,10 +98,10 @@ int main(int argc, char *argv[])
         free(subsets[i]);
  
     return(EXIT_SUCCESS);
-}
+    }
  
-unsigned int* create_start_primes(unsigned int max){
-    unsigned int* start_primes;
+    unsigned long int* create_start_primes(unsigned long int max){
+    unsigned long int* start_primes;
     unsigned int min=2;
     unsigned long int num_primes=max;
     

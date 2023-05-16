@@ -8,16 +8,16 @@
 #define verboselist
 // #define savelist
 
-int main(int argc,char* argv[]){
+ int main( int argc,char* argv[]){
     clock_t cstart, cend;
     double start, end;
-    int min = 2;
-    int max = 10000000;
-    int size = max + 1 - min;
+    unsigned long int min = 2;
+    unsigned long int max = 10000000;
+    unsigned long int size = max + 1 - min;
 
-    int *primes;
+    unsigned long int *primes;
     primes = malloc(sizeof(int) * size);
-    int num_primes = 0;
+    unsigned long int num_primes = 0;
 
     if(min <= 2)
         primes[num_primes++] = 2;
@@ -27,11 +27,11 @@ int main(int argc,char* argv[]){
     cstart = clock();
     start = omp_get_wtime();
 
-    for(int i = min; i <= max; i++){
-        int loc_max = (int) ceil(sqrt(i));
+    for(unsigned long int i = min; i <= max; i++){
+        unsigned long int loc_max = (int) ceil(sqrt(i));
         prime = true;
 
-        for(int j = 2; j <= loc_max; j++){
+        for(unsigned long int j = 2; j <= loc_max; j++){
             if(i % j == 0){
                 prime = false;
                 break;
@@ -47,7 +47,7 @@ int main(int argc,char* argv[]){
     end = omp_get_wtime();
 
     #ifdef verboselist
-    for (int i; i < num_primes; i++){
+    for (unsigned long int i; i < num_primes; i++){
         printf("%-8d", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
@@ -57,7 +57,7 @@ int main(int argc,char* argv[]){
 
     #ifdef savelist
     FILE *f = fopen("seq_div.txt","w+");
-    for (int i = 0; i < num_primes; i++){
+    for (unsigned long int i = 0; i < num_primes; i++){
         fprintf(f,"%d\n",primes[i]);
     }
     fclose(f);
