@@ -92,7 +92,7 @@
         }
     }
  
-    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%lu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
  
     for(int i = 0; i < thread_count; ++i)
         free(subsets[i]);

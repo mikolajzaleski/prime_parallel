@@ -10,13 +10,13 @@
 
 int main(int argc, char* argv[]){
     clock_t cstart, cend;
-    double start, end;
+   double start, end;
    unsigned long int  min = 2;
    unsigned long int  max = 1000000;
    unsigned long int  size = max + 1 - min;
 
    unsigned long int  *primes;
-    primes = malloc(sizeof(unsigned long int) * size);
+   primes = malloc(sizeof(unsigned long int) * size);
    unsigned long int  num_primes = 0;
 
     if(min <= 2)
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
 
     #ifdef verboselist
     for (unsigned long int i; i < num_primes; i++){
-        printf("%-8d", primes[i]);
+        printf("%-8lu", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
     }
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]){
 
     free(primes);
 
-    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%ld liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
     return EXIT_SUCCESS;
 }

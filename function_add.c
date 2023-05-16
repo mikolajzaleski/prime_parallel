@@ -10,7 +10,7 @@
 #define START_NUMBER 10000
 #define PARTITION_SIZE sizeof(bool)*((max-min)/thread_count+1)
 
-unsigned int* create_start_primes(unsigned  int max);
+unsigned long int* create_start_primes(unsigned  int max);
 int main(int argc, char *argv[])
 {omp_set_num_threads(8);
     clock_t cstart, cend;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     bool prime = false;
     int *primes;
     primes = malloc(sizeof(int) * size);
-    int num_primes = 0;
+    unsigned long int num_primes = 0;
     bool * primes_bool;
     primes_bool = malloc(sizeof(bool)*(max-min + 1));
 
@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
         // }
 	//
 	num_primes=nump+1;
-    printf("\n%d\n",num_primes);
-        printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+    printf("\n%lu\n",num_primes);
+        printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%lu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
 
 
@@ -99,30 +99,30 @@ int main(int argc, char *argv[])
 }
 
 
-unsigned int* create_start_primes(unsigned int max){
-    unsigned int* start_primes;
-    unsigned int min=2;
+unsigned long  int* create_start_primes(unsigned int max){
+    unsigned long int* start_primes;
+    unsigned long  int min=2;
     unsigned long int num_primes=max;
     
-    int idx=0;
+    unsigned long int idx=0;
     
     
     unsigned long int max_root=(unsigned long int)sqrt(max);
     start_primes=malloc(sizeof(unsigned long int)*max_root);
     bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
-    for (int i=2;i<=max_root;i++){
+    for (unsigned long int i=2;i<=max_root;i++){
         is_prime[i-2]=1;
     
     }
-    for (int d=2;d<=max_root;d++){
+    for (unsigned long int d=2;d<=max_root;d++){
         if(is_prime[d-2]==0)
             continue;
-        for(int m=d+d;m<=max_root;m+=d){
+        for(unsigned long int m=d+d;m<=max_root;m+=d){
             is_prime[m-2]=0;
         }
 
     }
-    for (int i=min-2;i<max_root;i++){
+    for (unsigned long int i=min-2;i<max_root;i++){
         if(is_prime[i]==1)
             {   idx++;
                 num_primes++;

@@ -48,7 +48,7 @@
 
     #ifdef verboselist
     for (unsigned long int i; i < num_primes; i++){
-        printf("%-8d", primes[i]);
+        printf("%-8ld", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
     }
@@ -65,7 +65,7 @@
 
     free(primes);
 
-    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%d liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+    printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%ld liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
 
     return EXIT_SUCCESS;
 }
