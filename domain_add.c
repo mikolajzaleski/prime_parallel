@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include<stdint.h>
+#include <stdint.h>
 #include <math.h>
 #include <string.h>
 #include <omp.h>
@@ -91,15 +91,19 @@ int main(int argc, char *argv[])
         uint64_t element_idx = i % PARTITION_SIZE;
         if (subsets[(subset_idx >= thread_count - 1) ? thread_count - 1 : subset_idx][(subset_idx >= thread_count) ? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false)
         {
+#pragma omp critical
+            {
 #pragma omp atomic
-num_primes++;
-            
+                num_primes++;
+            }
 #ifdef numbers
             printf("%d\n", ((subset_idx >= thread_count - 1) ? thread_count - 1 : subset_idx) * PARTITION_SIZE + min + ((subset_idx >= thread_count) ? i - (thread_count - 1) * PARTITION_SIZE : element_idx));
 #endif
         }
     }
+    #pragma omp barrier
 
+    printf("%llu \n",num_primes);
     printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart) / CLOCKS_PER_SEC, end - start, num_primes);
 
     for (int i = 0; i < thread_count; ++i)
