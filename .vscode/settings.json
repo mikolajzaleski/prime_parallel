@@ -1,0 +1,18 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\mikol\\source\\prime_parallel",
+            "binaryPath": "c:\\Users\\mikol\\source\\prime_parallel\\par_div.out",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\mikol\\source\\prime_parallel",
+            "binaryPath": "c:\\Users\\mikol\\source\\prime_parallel\\domain_add.out",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "math.h": "c",
+        "stdbool.h": "c"
+    }
+}
