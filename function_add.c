@@ -10,15 +10,15 @@
 #define START_NUMBER 10000
 #define PARTITION_SIZE sizeof(bool)*((max-min)/thread_count+1)
 
-unsigned long long int* create_start_primes(unsigned long long  int max);
+uint64_t* create_start_primes(unsigned long long  int max);
 int main(int argc, char *argv[])
 {omp_set_num_threads(8);
     clock_t cstart, cend;
     double start, end;
     unsigned int min = 2;
-    unsigned long long int max = 5000000000ULL;
-    unsigned long long int size = max - min;
-    unsigned long long int* start_p=create_start_primes((unsigned long long int)(max)+1);
+    uint64_t max = 100ULL;
+    uint64_t size = max - min;
+    uint64_t* start_p=create_start_primes((uint64_t)(max)+1);
 
     // for(unsigned int i=1;i<start_p[0];i++){
     //     printf("%d ",start_p[i]);
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     bool prime = false;
     int *primes;
     primes = malloc(sizeof(int) * size);
-    unsigned long long int num_primes = 0;
+    uint64_t num_primes = 0;
     bool * primes_bool;
     primes_bool = malloc(sizeof(bool)*(max-min + 1));
 
@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
     {
         
         #pragma omp for schedule(dynamic)
-        for(unsigned long long int i=0;i<start_p[0];i++){
-            for (unsigned long long int j=start_p[i];j<=max;j+=start_p[i]){
+        for(uint64_t i=0;i<start_p[0];i++){
+            for (uint64_t j=start_p[i];j<=max;j+=start_p[i]){
                 if(j>min&&j!=start_p[i]){
                     primes_b[j-min]=true;
                 }
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
     
     cend = clock();
     end = omp_get_wtime();
-    unsigned long long int nump=0;
+    uint64_t nump=0;
     #pragma omp parallel for schedule(guided)
-    for(unsigned long long int i=0;i<=max;i++){
+    for(uint64_t i=0;i<=max;i++){
 	
     if(!primes_b[i])
 	{
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 	}
     }
     // #pragma omp for
-    // for (unsigned long long int  i=2;i<max;i++)
+    // for (uint64_t  i=2;i<max;i++)
     //     if(!primes_b[i]){
     //         #pragma om
     //          num_primes+=1;
@@ -100,29 +100,29 @@ int main(int argc, char *argv[])
 
 
 unsigned long long  int* create_start_primes(unsigned long long  int max){
-    unsigned long long int* start_primes;
+    uint64_t* start_primes;
     unsigned long long  int min=2;
-    unsigned long long int num_primes=max;
+    uint64_t num_primes=max;
     
-    unsigned long long int idx=0;
+    uint64_t idx=0;
     
     
-    unsigned long long int max_root=(unsigned long long int)sqrt(max);
-    start_primes=malloc(sizeof(unsigned long long int)*max_root);
+    uint64_t max_root=(uint64_t)sqrt(max);
+    start_primes=malloc(sizeof(uint64_t)*max_root);
     bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
-    for (unsigned long long int i=2;i<=max_root;i++){
+    for (uint64_t i=2;i<=max_root;i++){
         is_prime[i-2]=1;
     
     }
-    for (unsigned long long int d=2;d<=max_root;d++){
+    for (uint64_t d=2;d<=max_root;d++){
         if(is_prime[d-2]==0)
             continue;
-        for(unsigned long long int m=d+d;m<=max_root;m+=d){
+        for(uint64_t m=d+d;m<=max_root;m+=d){
             is_prime[m-2]=0;
         }
 
     }
-    for (unsigned long long int i=min-2;i<max_root;i++){
+    for (uint64_t i=min-2;i<max_root;i++){
         if(is_prime[i]==1)
             {   idx++;
                 num_primes++;

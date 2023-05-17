@@ -11,13 +11,13 @@
 int main(int argc, char* argv[]){
     clock_t cstart, cend;
    double start, end;
-   unsigned long long int  min = 2;
-   unsigned long long int  max = 1000000;
-   unsigned long long int  size = max + 1 - min;
+   uint64_t  min = 2;
+   uint64_t  max = 1000000;
+   uint64_t  size = max + 1 - min;
 
-   unsigned long long int  *primes;
-   primes = malloc(sizeof(unsigned long long int) * size);
-   unsigned long long int  num_primes = 0;
+   uint64_t  *primes;
+   primes = malloc(sizeof(uint64_t) * size);
+   uint64_t  num_primes = 0;
 
     if(min <= 2)
         primes[num_primes++] = 2;
@@ -29,11 +29,11 @@ int main(int argc, char* argv[]){
 
     #pragma omp parallel shared(num_primes) private(prime)
     #pragma omp for schedule(guided)
-    for(unsigned long long int i = min; i <= max; i++){
-       unsigned long long int  loc_max = (unsigned long long int) ceil(sqrt(i));
+    for(uint64_t i = min; i <= max; i++){
+       uint64_t  loc_max = (uint64_t) ceil(sqrt(i));
         prime = true;
 
-        for(unsigned long long int j = 2; j <= loc_max; j++){
+        for(uint64_t j = 2; j <= loc_max; j++){
             if(i % j == 0){
                 prime = false;
                 break;
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
     end = omp_get_wtime();
 
     #ifdef verboselist
-    for (unsigned long long int i; i < num_primes; i++){
+    for (uint64_t i; i < num_primes; i++){
         printf("%-8llu", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
 
     #ifdef savelist
     FILE *f = fopen("parallel_div.txt","w+");
-    for (unsigned long long int i = 0; i < num_primes; i++){
+    for (uint64_t i = 0; i < num_primes; i++){
         fprintf(f,"%d\n",primes[i]);
     }
     fclose(f);

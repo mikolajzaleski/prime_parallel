@@ -11,13 +11,13 @@
  int main( int argc,char* argv[]){
     clock_t cstart, cend;
     double start, end;
-    unsigned long long int min = 2;
-    unsigned long long int max = 10000000;
-    unsigned long long int size = max + 1 - min;
+    uint64_t min = 2;
+    uint64_t max = 10000000;
+    uint64_t size = max + 1 - min;
 
-    unsigned long long int *primes;
+    uint64_t *primes;
     primes = malloc(sizeof(int) * size);
-    unsigned long long int num_primes = 0;
+    uint64_t num_primes = 0;
 
     if(min <= 2)
         primes[num_primes++] = 2;
@@ -27,11 +27,11 @@
     cstart = clock();
     start = omp_get_wtime();
 
-    for(unsigned long long int i = min; i <= max; i++){
-        unsigned long long int loc_max = (int) ceil(sqrt(i));
+    for(uint64_t i = min; i <= max; i++){
+        uint64_t loc_max = (int) ceil(sqrt(i));
         prime = true;
 
-        for(unsigned long long int j = 2; j <= loc_max; j++){
+        for(uint64_t j = 2; j <= loc_max; j++){
             if(i % j == 0){
                 prime = false;
                 break;
@@ -47,7 +47,7 @@
     end = omp_get_wtime();
 
     #ifdef verboselist
-    for (unsigned long long int i; i < num_primes; i++){
+    for (uint64_t i; i < num_primes; i++){
         printf("%-8llu", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
@@ -57,7 +57,7 @@
 
     #ifdef savelist
     FILE *f = fopen("seq_div.txt","w+");
-    for (unsigned long long int i = 0; i < num_primes; i++){
+    for (uint64_t i = 0; i < num_primes; i++){
         fprintf(f,"%d\n",primes[i]);
     }
     fclose(f);
