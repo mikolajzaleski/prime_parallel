@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 
     uint64_t num_primes = 0;
 
-    uint64_t min = 0;
-    uint64_t max = 100ULL;
+    uint64_t min = 2;
+    uint64_t max = 5000000000;
 
     uint64_t size = max - min;
     uint64_t *start_primes = create_start_primes((max));

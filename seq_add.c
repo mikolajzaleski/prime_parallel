@@ -7,24 +7,13 @@
 #include <math.h>
 #include<string.h>
 #include<fcntl.h>
-void print_results(char* name,bool * primes_bool,uint64_t min,uint64_t max){
-    FILE* x=fopen(name,"w+");
-    fclose(x);   
-    for (uint64_t i = min;i<=max;i++){
-    FILE* f=fopen(name,"a");    
-       
-        
-        if(!primes_bool[i]){
-            fprintf(f,"%llu\n",i);
-        }
-        fclose(f);
-    }}
+
  int main( int argc, char *argv[])
 {
     uint64_t min = 2;
-    uint64_t max = 100000000;
+    uint64_t max = 500000000;
     uint64_t size = max - min;
-    FILE f;
+  
     bool prime = false;
     uint64_t *primes;
     primes = malloc(sizeof(int) * size);
@@ -42,12 +31,18 @@ void print_results(char* name,bool * primes_bool,uint64_t min,uint64_t max){
             for (tmp = i+i; tmp <= max; tmp += i)
             {
                 primes_bool[tmp]=true;
-                num_primes++;
+                
             }
         }
     }
+    for (uint64_t i=2 ;i<max;i++){
+        if (!primes_bool[i])
+            num_primes++;
+            
 
-    print_results("name",primes_bool,min,max);
-    printf("%llu",size);
+    }
+
+    
+    printf("%llu",num_primes);
 
 }

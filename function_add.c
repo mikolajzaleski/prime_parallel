@@ -14,11 +14,11 @@
 
 uint64_t* create_start_primes(uint64_t max);
 int main(int argc, char *argv[])
-{omp_set_num_threads(8);
+{
     clock_t cstart, cend;
     double start, end;
     unsigned int min = 2;
-    uint64_t max = 100ULL;
+    uint64_t max = 5000000000;
     uint64_t size = max - min;
     uint64_t* start_p=create_start_primes((uint64_t)(max)+1);
 
@@ -37,9 +37,14 @@ int main(int argc, char *argv[])
      
     #pragma omp parallel
     thread_count = omp_get_num_threads();
-
-    bool *primes_b=malloc(sizeof(bool)*(max));
-
+    
+    bool *primes_b=(bool*)malloc(sizeof(bool)*(max+1));
+  //  #pragma omp parallel for
+    // for (uint64_t i=0;i<max;i++){
+    //     // printf("%llu ",i);
+    //     primes_b[i]=0;
+         
+    // }
     
 
     int sqrt_sieve = sqrt(max);
@@ -48,29 +53,31 @@ int main(int argc, char *argv[])
     cstart = clock();
     start = omp_get_wtime();
     
-
-    #pragma omp parallel 
-    {
-        
-        #pragma omp for schedule(dynamic)
+ #pragma omp parallel 
+ {
+        #pragma omp  for schedule(dynamic)
         for(uint64_t i=0;i<start_p[0];i++){
             for (uint64_t j=start_p[i];j<=max;j+=start_p[i]){
-                if(j>min&&j!=start_p[i]){
-                    primes_b[j-min]=true;
+                if(j!=start_p[i]){
+                    primes_b[j]=true;
+                    
+                   
                 }
+                
 
             }
                 
         }
-       
-    }
+ }     
     
     
     cend = clock();
     end = omp_get_wtime();
     uint64_t nump=0;
-    #pragma omp parallel for schedule(guided)
-    for(uint64_t i=0;i<=max;i++){
+    #pragma omp parallel
+    {
+    #pragma omp  for schedule(dynamic)
+    for(uint64_t i=2;i<=max;i++){
 	
     if(!primes_b[i])
 	{
@@ -78,9 +85,10 @@ int main(int argc, char *argv[])
     #pragma omp atomic
         	nump++;
 //        printf("%d ",i);
+  //  printf("%d ",i);
 	}
     }
-    // #pragma omp for
+}    // #pragma omp for
     // for (uint64_t  i=2;i<max;i++)
     //     if(!primes_b[i]){
     //         #pragma om
@@ -91,9 +99,9 @@ int main(int argc, char *argv[])
         //     printf("\n");
         // }
 	//
-	num_primes=nump+1;
-    printf("\n%llu\n",num_primes);
-        printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, num_primes);
+	
+    printf("\n%llu\n",nump);
+        printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, nump);
 
 
 
