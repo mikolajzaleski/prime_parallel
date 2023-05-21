@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 { uint64_t nump=0;
     clock_t cstart, cend;
     double start, end;
-    unsigned int min = 2;
+    uint64_t min = 2;
     uint64_t max = 5000000000;
     uint64_t size = max - min;
     uint64_t* start_p=create_start_primes((uint64_t)(max)+1);
@@ -28,35 +28,33 @@ int main(int argc, char *argv[])
 
     bool prime = false;
     int *primes;
-    primes = malloc(sizeof(int) * size);
     uint64_t num_primes = 0;
     bool * primes_bool;
-    primes_bool = malloc(sizeof(bool)*(max-min + 1));
 
     int thread_count;
      
     #pragma omp parallel
     thread_count = omp_get_num_threads();
-    
-    bool *primes_b=(bool*)malloc(sizeof(bool)*(max+1));
-  //  #pragma omp parallel for
-    // for (uint64_t i=0;i<max;i++){
-    //     // printf("%llu ",i);
-    //     primes_b[i]=0;
-    // }
-    
+     cstart = clock();
+    start = omp_get_wtime();
+    bool *primes_b=(bool*)calloc((max+1),sizeof(bool));
+  
 
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
     int i;
-    cstart = clock();
-    start = omp_get_wtime();
+   
 //for (int row=0;row<15;row++){
  #pragma omp parallel 
  {
         #pragma omp  for schedule(dynamic)
-        for(uint64_t i=0;i<start_p[0];i++){
-            for (uint64_t j=start_p[i];j<=max;j+=start_p[i]){
+        for(uint64_t i=1;i<start_p[0];i++){
+            uint64_t mn=min%start_p[i];
+            uint64_t start_n=min-mn;
+            if(start_n<0){
+                start_n=0;
+            }
+            for (uint64_t j=start_n;j<=max;j+=start_p[i]){
                 if(j!=start_p[i]){
                     primes_b[j]=true;
                     
@@ -76,7 +74,7 @@ int main(int argc, char *argv[])
     #pragma omp parallel
     {
     #pragma omp  for schedule(guided)
-    for(uint64_t i=2;i<=max;i++){
+    for(uint64_t i=min;i<=max;i++){
 	
     if(!primes_b[i])
 	{
@@ -101,7 +99,7 @@ int main(int argc, char *argv[])
 	
     printf("\n%llu\n",nump);
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, nump);
-
+    free(primes_b);
 
 
     return(EXIT_SUCCESS);
@@ -117,8 +115,8 @@ uint64_t* create_start_primes(uint64_t max){
     
     
     uint64_t max_root=(uint64_t)sqrt(max);
-    start_primes=malloc(sizeof(uint64_t)*max_root);
-    bool* is_prime=malloc(sizeof(bool)*max_root);//valgrind pisze że tu się psuje
+    start_primes=calloc(max_root,sizeof(uint64_t));
+    bool* is_prime=calloc(max_root,sizeof(bool));//valgrind pisze że tu się psuje
     for (uint64_t i=2;i<=max_root;i++){
         is_prime[i-2]=1;
     
