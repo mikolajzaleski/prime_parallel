@@ -14,7 +14,7 @@
 
 uint64_t* create_start_primes(uint64_t max);
 int main(int argc, char *argv[])
-{
+{ uint64_t nump=0;
     clock_t cstart, cend;
     double start, end;
     unsigned int min = 2;
@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
     // for (uint64_t i=0;i<max;i++){
     //     // printf("%llu ",i);
     //     primes_b[i]=0;
-         
     // }
     
 
@@ -52,7 +51,7 @@ int main(int argc, char *argv[])
     int i;
     cstart = clock();
     start = omp_get_wtime();
-    
+//for (int row=0;row<15;row++){
  #pragma omp parallel 
  {
         #pragma omp  for schedule(dynamic)
@@ -69,14 +68,14 @@ int main(int argc, char *argv[])
                 
         }
  }     
-    
+
     
     cend = clock();
     end = omp_get_wtime();
-    uint64_t nump=0;
+     nump=0;
     #pragma omp parallel
     {
-    #pragma omp  for schedule(dynamic)
+    #pragma omp  for schedule(guided)
     for(uint64_t i=2;i<=max;i++){
 	
     if(!primes_b[i])
@@ -88,7 +87,7 @@ int main(int argc, char *argv[])
   //  printf("%d ",i);
 	}
     }
-}    // #pragma omp for
+}//}    // #pragma omp for
     // for (uint64_t  i=2;i<max;i++)
     //     if(!primes_b[i]){
     //         #pragma om
