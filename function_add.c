@@ -11,14 +11,18 @@
 #include <fcntl.h>
 #define START_NUMBER 10000
 #define PARTITION_SIZE sizeof(bool)*((max-min)/thread_count+1)
-
+//#define PRINT_OPTIONS
 uint64_t* create_start_primes(uint64_t max);
 int main(int argc, char *argv[])
-{ uint64_t nump=0;
+{  // omp_set_num_threads(14);
+     uint64_t nump=0;
     clock_t cstart, cend;
     double start, end;
-    uint64_t min = 2;
-    uint64_t max = 5000000000;
+    cstart = clock();
+    start = omp_get_wtime(); 
+    
+    uint64_t min = 50;
+    uint64_t max = 10000000000;
     uint64_t size = max - min;
     uint64_t* start_p=create_start_primes((uint64_t)(max)+1);
 
@@ -35,29 +39,30 @@ int main(int argc, char *argv[])
      
     #pragma omp parallel
     thread_count = omp_get_num_threads();
-     cstart = clock();
-    start = omp_get_wtime();
-    bool *primes_b=(bool*)calloc((max+1),sizeof(bool));
+     
+    bool *primes_b=(bool*)calloc((max-min+1),sizeof(bool));
   
 
     int sqrt_sieve = sqrt(max);
     int tmp; // temporary sum
     int i;
-   
-//for (int row=0;row<15;row++){
+   nump=0;
+//for (int row=0;row<15;row++){#define 
  #pragma omp parallel 
  {
         #pragma omp  for schedule(dynamic)
         for(uint64_t i=1;i<start_p[0];i++){
             uint64_t mn=min%start_p[i];
+            //uint64_t start_n=min-mn+start_p[i];
             uint64_t start_n=min-mn;
-            if(start_n<0){
-                start_n=0;
-            }
+            // if(start_n<0){
+            //     start_n=0;
+            // }
             for (uint64_t j=start_n;j<=max;j+=start_p[i]){
                 if(j!=start_p[i]){
-                    primes_b[j]=true;
-                    
+                    if ((j>=min)){
+                        primes_b[j-min]=true;
+                    }
                    
                 }
                 
@@ -65,27 +70,46 @@ int main(int argc, char *argv[])
             }
                 
         }
- }     
+ // }     
 
     
-    cend = clock();
-    end = omp_get_wtime();
-     nump=0;
-    #pragma omp parallel
-    {
+    
+     
+   //  #pragma omp parallel
+     //{
     #pragma omp  for schedule(guided)
-    for(uint64_t i=min;i<=max;i++){
+    for(uint64_t i=0;i<=max-min;i++){
 	
     if(!primes_b[i])
 	{
 	//	primes[idx]=i;
     #pragma omp atomic
         	nump++;
-//        printf("%d ",i);
-  //  printf("%d ",i);
+  
 	}
+    
     }
-}//}    // #pragma omp for
+    
+}cend = clock();
+    end = omp_get_wtime();
+    
+      #ifdef PRINT_OPTIONS     
+       uint64_t num_druk=0;
+        for(uint64_t i=0;i<=max-min;i++){
+             if(!primes_b[i])
+	{
+        printf("%lu ",i+min);
+        num_druk++;
+       // #pragma omp critical 
+        // {
+
+            if(num_druk%10==0)
+                printf("\n");
+        // } 
+        }
+        }
+     #endif
+    //}    // #pragma omp for
     // for (uint64_t  i=2;i<max;i++)
     //     if(!primes_b[i]){
     //         #pragma om
@@ -99,7 +123,7 @@ int main(int argc, char *argv[])
 	
     printf("\n%llu\n",nump);
         printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart)/CLOCKS_PER_SEC, end - start, nump);
-    free(primes_b);
+   // free(primes_b);
 
 
     return(EXIT_SUCCESS);

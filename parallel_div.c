@@ -13,11 +13,11 @@ int main(int argc, char* argv[]){
     clock_t cstart, cend;
    double start, end;
    uint64_t  min = 2;
-   uint64_t  max = 1000000;
+   uint64_t  max = 100;
    uint64_t  size = max + 1 - min;
 
    uint64_t  *primes;
-   primes = malloc(sizeof(uint64_t) * size);
+   primes = calloc( size,sizeof(uint64_t) );
    uint64_t  num_primes = 0;
 
     if(min <= 2)
@@ -42,16 +42,19 @@ int main(int argc, char* argv[]){
         }
 
         #pragma omp critical (num_primes) 
-        if(prime)
-            primes[num_primes++] = i;
-    } 
+        {
+        if(prime){
+            #pragma omp atomic
+            num_primes++;
+            primes[num_primes] = i;
+    } }}
     
     cend = clock();
     end = omp_get_wtime();
 
     #ifdef verboselist
     for (uint64_t i; i < num_primes; i++){
-        printf("%-8llu", primes[i]);
+        printf("%-8llu ", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
     }

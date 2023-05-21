@@ -14,15 +14,16 @@
 uint64_t *create_start_primes(uint64_t max);
 
 int main(int argc, char *argv[])
-{ //   omp_set_num_threads(8);
+{   omp_set_num_threads(14);
     // init
     clock_t cstart, cend;
     double start, end;
-
+ cstart = clock();
+    start = omp_get_wtime();
     uint64_t num_primes = 0;
 
-    uint64_t min = 2;
-    uint64_t max = 5000000000;
+    uint64_t min = 50;
+    uint64_t max = 10000000000;
 
     uint64_t size = max - min;
     uint64_t *start_primes = create_start_primes((max));
@@ -41,8 +42,7 @@ int main(int argc, char *argv[])
         subsets[i] = malloc(PARTITION_SIZE);
     subsets[thread_count - 1] = malloc(size - ((thread_count - 2) * PARTITION_SIZE));
     // start ticking ;)
-    cstart = clock();
-    start = omp_get_wtime();
+   
 
     // after init
 
@@ -82,8 +82,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    cend = clock();
-    end = omp_get_wtime();
+ 
 #pragma omp parallel for schedule(guided)
     for (uint64_t i = 0; i <= size; ++i)
     {
@@ -101,7 +100,8 @@ int main(int argc, char *argv[])
         }
     }
     #pragma omp barrier
-
+   cend = clock();
+    end = omp_get_wtime();
     printf("%llu \n",num_primes);
     printf("\nCzas procesora: %fs \nCzas przetwarzania: %fs\n%llu liczb pierwszych\n", (double)(cend - cstart) / CLOCKS_PER_SEC, end - start, num_primes);
 

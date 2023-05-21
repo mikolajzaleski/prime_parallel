@@ -14,11 +14,11 @@
     clock_t cstart, cend;
     double start, end;
     uint64_t min = 2;
-    uint64_t max = 10000000;
+    uint64_t max = 100;
     uint64_t size = max + 1 - min;
 
     uint64_t *primes;
-    primes = malloc(sizeof(int) * size);
+    primes = calloc( size,sizeof(int) );
     uint64_t num_primes = 0;
 
     if(min <= 2)
@@ -40,7 +40,6 @@
             }
         }
 
-        #pragma omp critical (num_primes) 
         if(prime)
             primes[num_primes++] = i;
     } 
@@ -50,7 +49,7 @@
 
     #ifdef verboselist
     for (uint64_t i; i < num_primes; i++){
-        printf("%-8llu", primes[i]);
+        printf("%-8llu ", primes[i]);
         if((i + 1) % 10 == 0)
             printf("\n");
     }
