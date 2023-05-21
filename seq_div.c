@@ -1,36 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include<stdint.h>
-
 #include <omp.h>
 #include <math.h>
 #include <time.h>
+#include<stdint.h>
 
 #define verboselist
 // #define savelist
 
- int main( int argc,char* argv[]){
+int main(int argc, char* argv[]){
     clock_t cstart, cend;
-    double start, end;
-    uint64_t min = 2;
-    uint64_t max = 100;
-    uint64_t size = max + 1 - min;
+   double start, end;
+   uint64_t  min = 2;
+   uint64_t  max = 400000000;
+   
+   uint64_t  size = max + 1 - min;
 
-    uint64_t *primes;
-    primes = calloc( size,sizeof(int) );
-    uint64_t num_primes = 0;
+   bool  *primes;
+   primes = calloc( size,sizeof(bool) );
+   uint64_t  num_primes = 0;
 
-    if(min <= 2)
-        primes[num_primes++] = 2;
-
+    
     bool prime;
 
     cstart = clock();
     start = omp_get_wtime();
 
+   
     for(uint64_t i = min; i <= max; i++){
-        uint64_t loc_max = (int) ceil(sqrt(i));
+       uint64_t  loc_max = (uint64_t) ceil(sqrt(i));
         prime = true;
 
         for(uint64_t j = 2; j <= loc_max; j++){
@@ -40,24 +39,29 @@
             }
         }
 
-        if(prime)
-            primes[num_primes++] = i;
-    } 
+       
+        if(prime){
+            num_primes++;
+            primes[i-min] = true;
+    }}
     
     cend = clock();
     end = omp_get_wtime();
 
     #ifdef verboselist
-    for (uint64_t i; i < num_primes; i++){
-        printf("%-8llu ", primes[i]);
-        if((i + 1) % 10 == 0)
+    uint64_t lc=0;
+    for (uint64_t i=0; i < (max-min); i++){
+        if(primes[i]){
+            lc++;
+        printf("%llu ", i+min);
+        if((lc) % 10 == 0)
             printf("\n");
-    }
+    }}
     printf("\n");
     #endif
 
     #ifdef savelist
-    FILE *f = fopen("seq_div.txt","w+");
+    FILE *f = fopen("parallel_div.txt","w+");
     for (uint64_t i = 0; i < num_primes; i++){
         fprintf(f,"%d\n",primes[i]);
     }
