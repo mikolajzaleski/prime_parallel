@@ -84,18 +84,17 @@ int main(int argc, char *argv[])
 
     cend = clock();
     end = omp_get_wtime();
-#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
     for (uint64_t i = 0; i <= size; ++i)
     {
         uint64_t subset_idx = i / PARTITION_SIZE;
         uint64_t element_idx = i % PARTITION_SIZE;
         if (subsets[(subset_idx >= thread_count - 1) ? thread_count - 1 : subset_idx][(subset_idx >= thread_count) ? i - (thread_count - 1) * PARTITION_SIZE : element_idx] == false)
         {
-#pragma omp critical
-            {
+
 #pragma omp atomic
                 num_primes++;
-            }
+           
 #ifdef numbers
             printf("%d\n", ((subset_idx >= thread_count - 1) ? thread_count - 1 : subset_idx) * PARTITION_SIZE + min + ((subset_idx >= thread_count) ? i - (thread_count - 1) * PARTITION_SIZE : element_idx));
 #endif
