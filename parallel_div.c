@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <math.h>
 #include <time.h>
+#include<stdint.h>
 
 #define verboselist
 // #define savelist
