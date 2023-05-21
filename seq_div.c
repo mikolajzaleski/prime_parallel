@@ -6,14 +6,14 @@
 #include <time.h>
 #include<stdint.h>
 
-#define verboselist
+//#define verboselist
 // #define savelist
 
 int main(int argc, char* argv[]){
     clock_t cstart, cend;
    double start, end;
    uint64_t  min = 2;
-   uint64_t  max = 400000000;
+   uint64_t  max = 225000000;
    
    uint64_t  size = max + 1 - min;
 
@@ -33,10 +33,13 @@ int main(int argc, char* argv[]){
         prime = true;
 
         for(uint64_t j = 2; j <= loc_max; j++){
-            if(i % j == 0){
+            if(i % j == 0&&i!=2){
                 prime = false;
                 break;
             }
+        }
+          if(i<2){
+            prime=false;
         }
 
        
